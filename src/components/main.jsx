@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from "react";
 
 export default function Main() {
-  const [todo, setTodo] = useState("");
+  const [todo, setTodo] = useState("Please Add your first task");
   const [todos, setTodos] = useState([]);
   const [editedTodoIndex, setEditedTodoIndex] = useState(null);
 
   const handleEdit = (index) => {
     setEditedTodoIndex(index);
-    saveToLS()
+    saveToLS();
   };
 
   const handleDelete = (index) => {
     const newTodos = [...todos];
     newTodos.splice(index, 1);
     setTodos(newTodos);
-    saveToLS()
+    saveToLS();
   };
 
   const handleAdd = () => {
-    if(todo.trim() === ""){
-      alert("Please! Write down a task")
-    }
-    else{
-    setTodos([...todos, { todo: todo, isCompleted: false }]);
-    setTodo("");
-    saveToLS()
+    if (todo.trim() === "") {
+      alert("Please! Write down a task");
+    } else {
+      setTodos([...todos, { todo: todo, isCompleted: false }]);
+      setTodo("");
+      saveToLS();
     }
   };
 
@@ -33,15 +32,17 @@ export default function Main() {
     newTodos[index].todo = e.target.value;
     setTodos(newTodos);
   };
-  
-  useEffect(() => {
-    let todos = JSON.parse(localStorage.getItem('todos'));
-    setTodos(todos)
-  },[])
 
-  const saveToLS = (params) => {
-       localStorage.setItem("todos",JSON.stringify(todos))
-  }
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem("todos"));
+    if (Array.isArray(storedTodos)) {
+      setTodos(storedTodos);
+    }
+  }, []);
+
+  const saveToLS = () => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  };
 
   return (
     <div>
@@ -69,9 +70,10 @@ export default function Main() {
         <h2 className="text-lg font-bold m-2"> Your Tasks </h2>
 
         <div className="todos">
-          {todos.length === 0 && <div>There is no task to do.</div>}
-          {todos.map((item, index) => {
-            return (
+          {todos.length === 0 ? (
+            <div>There is no task to do.</div>
+          ) : (
+            todos.map((item, index) => (
               <div key={index} className="todo flex m-2 justify-end ">
                 <div className={item.isCompleted ? "line-through" : ""}>
                   {editedTodoIndex === index ? (
@@ -108,8 +110,8 @@ export default function Main() {
                   Delete
                 </button>
               </div>
-            );
-          })}
+            ))
+          )}
         </div>
       </div>
     </div>
